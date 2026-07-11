@@ -34,8 +34,8 @@ public class BossTimerHUD
             enableBossTimerHUD = configFile.Bind("General", "EnableBossTimerHUD", true, "Enables the Amalgamation boss timer HUD display.");
             enableBossTimerHUD.SettingChanged += OnEnableBossTimerHUDChanged;
 
-            bossTimerAnchorX = configFile.Bind("HUD Positioning", "BossTimerAnchorX", 0.5f, "X anchor position for Boss Timer (0-1).");
-            bossTimerAnchorY = configFile.Bind("HUD Positioning", "BossTimerAnchorY", 0.05f, "Y anchor position for Boss Timer (0-1).");
+            bossTimerAnchorX = configFile.Bind("HUD Positioning", "BossTimerAnchorX", 0.8229749f, "X anchor position for Boss Timer (0-1).");
+            bossTimerAnchorY = configFile.Bind("HUD Positioning", "BossTimerAnchorY", 0.9050629f, "Y anchor position for Boss Timer (0-1).");
             bossTimerAnchorX.SettingChanged += OnAnchorChanged;
             bossTimerAnchorY.SettingChanged += OnAnchorChanged;
         }
