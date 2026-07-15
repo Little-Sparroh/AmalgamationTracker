@@ -11,7 +11,9 @@ public class BossTimerHUD
     private ConfigEntry<bool> enableBossTimerHUD;
     private ConfigEntry<float> bossTimerAnchorX;
     private ConfigEntry<float> bossTimerAnchorY;
+    private ConfigColor valueColor;
     private HudHandle hud;
+
     private readonly ConfigFile configFile;
     private readonly Harmony harmony;
 
@@ -38,7 +40,11 @@ public class BossTimerHUD
             bossTimerAnchorY = configFile.Bind("HUD Positioning", "BossTimerAnchorY", 0.9050629f, "Y anchor position for Boss Timer (0-1).");
             bossTimerAnchorX.SettingChanged += OnAnchorChanged;
             bossTimerAnchorY.SettingChanged += OnAnchorChanged;
+
+            valueColor = ConfigColor.Bind(configFile, "Colors", "ValueColor", UIColors.Amber,
+                "Rich-text value color for the boss timer (hex RRGGBB or #RRGGBB).");
         }
+
         catch (Exception ex)
         {
             SparrohPlugin.Logger.LogError($"Failed to initialize BossTimerHUD: {ex.Message}");
@@ -172,11 +178,12 @@ public class BossTimerHUD
             }
 
             if (hasFinalTime)
-                hud.Primary.SetRich("Amalgamation", FormatTime(finalTime), UIColors.Amber);
+                hud.Primary.SetRich("Amalgamation", FormatTime(finalTime), valueColor.Value);
             else if (isTiming)
-                hud.Primary.SetRich("Amalgamation", FormatTime(Time.realtimeSinceStartup - startTime), UIColors.Amber);
+                hud.Primary.SetRich("Amalgamation", FormatTime(Time.realtimeSinceStartup - startTime), valueColor.Value);
             else
                 hud.Primary.Text = "Amalgamation: Waiting...";
+
         }
         catch (Exception ex)
         {
