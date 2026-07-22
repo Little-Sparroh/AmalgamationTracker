@@ -51,7 +51,8 @@ public class BossTimerHUD
         }
     }
 
-    private bool IsHudAlive => hud != null && hud.GameObject != null && hud.Primary != null;
+    private bool IsHudAlive => HudHandle.IsValid(hud) && hud.Primary != null;
+
 
     public bool IsActive => IsHudAlive && hud.IsActive;
     public Vector2 GetSize => IsHudAlive ? hud.Size : Vector2.zero;
@@ -123,11 +124,12 @@ public class BossTimerHUD
         HudRepositionClient.Unregister(SparrohPlugin.PluginGUID);
         if (hud != null)
         {
-            if (hud.GameObject != null)
+            if (hud.IsAlive)
                 hud.Destroy();
             hud = null;
         }
     }
+
 
     public void StartTimer()
     {
