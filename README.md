@@ -1,63 +1,86 @@
-# Amalgamation Tracker
+# AmalgamationTracker
 
-A BepInEx mod for MycoPunk that tracks Amalgamation boss fight time with an on-screen HUD timer.
+A BepInEx client mod for Mycopunk that tracks Amalgamation boss fight time with an on-screen HUD timer.
 
 ## Features
 
 - **Automatic timing**: Starts when the Amalgamation spawns and stops when the brain is killed
-- **On-screen HUD**: Displays live elapsed time (or final time) near the bottom of the reticle
+- **On-screen HUD**: Shows waiting, live elapsed, and final time near the reticle (`MM:SS.mmm`)
 - **Mission reset**: Timer resets when a new mission starts
-- **Configurable**: Toggle the HUD on or off via config with hot reload support
+- **Configurable**: Toggle the HUD, set position anchors, and choose the timer color
+- **Hot reload**: Config changes apply while the game is running
+- **Optional repositioning**: Drag the timer in-game via ModSettingsMenu (F9) through SparrohUILib
 
-## Getting Started
+## Dependencies
 
-### Dependencies
+- Mycopunk
+- [BepInExPack_Mycopunk](https://thunderstore.io/c/mycopunk/p/BepInEx/BepInExPack_Mycopunk/) (BepInEx 5.4.2403 or
+  compatible)
+- [SparrohUILib](https://thunderstore.io/c/mycopunk/p/Sparroh/SparrohUILib/) (1.2.0 or compatible)
+- [ModSettingsMenu](https://thunderstore.io/c/mycopunk/p/Sparroh/ModSettingsMenu/) (optional, for F9 drag-reposition)
 
-* MycoPunk (base game)
-* [BepInEx](https://github.com/BepInEx/BepInEx) - Version 5.4.2403 or compatible
-* .NET Framework 4.8
-* [HarmonyLib](https://github.com/pardeike/Harmony) (included via NuGet)
+## Installing
 
-### Building/Compiling
+**Via Thunderstore (recommended)**
 
-1. Clone this repository
-2. Open the solution file in Visual Studio, Rider, or your preferred C# IDE
-3. Build the project in Release mode to generate the .dll file
+1. Install with a Thunderstore mod manager (for example r2modman or the Thunderstore App).
+2. Ensure **SparrohUILib** is installed as a dependency.
 
-Alternatively, use dotnet CLI:
+**Manual installation**
+
+1. Install BepInEx and SparrohUILib for Mycopunk.
+2. Place `AmalgamationTracker.dll` in `<Mycopunk Directory>/BepInEx/plugins/`.
+
+The mod loads automatically with BepInEx. Check the BepInEx log for:
+
+`AmalgamationTracker loaded successfully.`
+
+## Building
+
+1. Clone this repository.
+2. Restore and build in Release mode:
+
 ```bash
 dotnet build --configuration Release
 ```
 
-### Installing
+3. Output DLL:
 
-**Via Thunderstore (Recommended)**:
-1. Download and install via Thunderstore Mod Manager
-2. The mod will be automatically installed to the correct directory
+`bin/Release/netstandard2.1/AmalgamationTracker.dll`
 
-**Manual Installation**:
-1. Place the built `AmalgamationTracker.dll` in your `<MycoPunk Directory>/BepInEx/plugins/` folder
-
-### Executing program
-
-The mod loads automatically through BepInEx when the game starts. Check the BepInEx console for loading confirmation messages.
+Game and SparrohUILib assembly paths in the project file may need to match your local install.
 
 ## Configuration
 
-Access mod settings through the BepInEx configuration file at `<MycoPunk Directory>/BepInEx/config/sparroh.amalgamationtracker.cfg`.
+Config file:
 
-| Option | Default | Description |
-|---|---|---|
-| `EnableBossTimerHUD` | `true` | Enables the Amalgamation boss timer HUD display |
+`<Mycopunk Directory>/BepInEx/config/sparroh.amalgamationtracker.cfg`
 
-Config changes are hot-reloaded while the game is running.
+| Section           | Option                      | Default     | Description                                   |
+|-------------------|-----------------------------|-------------|-----------------------------------------------|
+| `General`         | `Enable Amalgamation Timer` | `true`      | Enables the Amalgamation timer HUD            |
+| `HUD Positioning` | `Timer X`                   | `0.8229749` | X anchor position (0–1)                       |
+| `HUD Positioning` | `Timer Y`                   | `0.9050629` | Y anchor position (0–1)                       |
+| `Colors`          | `Timer Color`               | Amber       | Rich-text value color (`RRGGBB` or `#RRGGBB`) |
+
+Config changes are hot-reloaded while the game is running. With ModSettingsMenu installed, press **F9** to drag the
+timer; anchor values are written back to this config.
+
+## Usage
+
+1. Start an Amalgamation mission.
+2. The HUD shows `Amalgamation: Waiting...` until the boss spawns.
+3. Timing begins on spawn and updates live.
+4. Timing stops when the brain is killed and the final time remains on screen.
+5. Starting a new mission resets the timer.
 
 ## Help
 
-* **Mod not loading?** Verify BepInEx is installed correctly and check console logs for errors
-* **Timer not appearing?** Ensure `EnableBossTimerHUD` is set to `true` in the config file
-* **Timer not starting?** Confirm you are in an Amalgamation mission and the boss has spawned
-* **UI elements missing?** Confirm mod version compatibility and verify no other mods are interfering
+- **Mod not loading?** Confirm BepInEx and SparrohUILib are installed, then check the BepInEx log for errors.
+- **Timer not appearing?** Set `Enable Amalgamation Timer` to `true` and make sure you are in-game with a reticle HUD.
+- **Timer not starting?** Confirm you are on an Amalgamation mission and the boss has spawned.
+- **Wrong position or color?** Adjust `Timer X`, `Timer Y`, and `Timer Color` in the config file, or drag with F9 when
+  ModSettingsMenu is installed.
 
 ## Authors
 
@@ -65,4 +88,4 @@ Config changes are hot-reloaded while the game is running.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

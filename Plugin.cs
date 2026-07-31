@@ -2,26 +2,34 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using System.IO;
 
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
 [BepInDependency("sparroh.uilibrary")]
 [MycoMod(null, ModFlags.IsClientSide)]
 public class SparrohPlugin : BaseUnityPlugin
-
 {
     public const string PluginGUID = "sparroh.amalgamationtracker";
     public const string PluginName = "AmalgamationTracker";
-    public const string PluginVersion = "1.0.1";
+    public const string PluginVersion = "1.0.2";
 
-    internal static new ManualLogSource Logger;
+    internal new static ManualLogSource Logger;
+    private BossTimerHUD bossTimerHUD;
 
     private Harmony harmony;
-    private BossTimer bossTimer;
 
     private void Awake()
     {
         Logger = base.Logger;
+
+        try
+        {
+            ConfigManager.Initialize(Config, Logger);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Failed to initialize config: {ex.Message}");
+            return;
+        }
 
         try
         {
@@ -33,28 +41,13 @@ public class SparrohPlugin : BaseUnityPlugin
             return;
         }
 
-        var configFile = Config;
         try
         {
-            var watcher = new FileSystemWatcher(Paths.ConfigPath, "sparroh.amalgamationtracker.cfg");
-            watcher.Changed += (s, e) =>
-            {
-                configFile.Reload();
-            };
-            watcher.EnableRaisingEvents = true;
+            bossTimerHUD = new BossTimerHUD();
         }
         catch (Exception ex)
         {
-            Logger.LogWarning($"Failed to set up config watcher: {ex.Message}");
-        }
-
-        try
-        {
-            bossTimer = new BossTimer(configFile, harmony);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError($"Failed to initialize BossTimer: {ex.Message}");
+            Logger.LogError($"Failed to initialize BossTimerHUD: {ex.Message}");
         }
 
         try
@@ -73,20 +66,16 @@ public class SparrohPlugin : BaseUnityPlugin
     {
         try
         {
-            if (bossTimer != null) bossTimer.UpdateHudVisibility();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError($"Error in BossTimer.UpdateHudVisibility(): {ex.Message}");
-        }
+            ConfigManager.Tick();
 
-        try
-        {
-            if (bossTimer != null) bossTimer.Update();
+            if (ConfigManager.ConsumePendingRefresh() && bossTimerHUD != null)
+                bossTimerHUD.OnConfigChanged();
+
+            if (bossTimerHUD != null) bossTimerHUD.Update();
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Error in BossTimer.Update(): {ex.Message}");
+            Logger.LogError($"Error in BossTimerHUD.Update(): {ex.Message}");
         }
     }
 
@@ -94,11 +83,20 @@ public class SparrohPlugin : BaseUnityPlugin
     {
         try
         {
-            if (bossTimer != null) bossTimer.OnDestroy();
+            if (bossTimerHUD != null) bossTimerHUD.OnDestroy();
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Error in BossTimer.OnDestroy(): {ex.Message}");
+            Logger.LogError($"Error in BossTimerHUD.OnDestroy(): {ex.Message}");
+        }
+
+        try
+        {
+            ConfigManager.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error disposing config: {ex.Message}");
         }
 
         try
